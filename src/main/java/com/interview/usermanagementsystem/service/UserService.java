@@ -36,6 +36,9 @@ public class UserService {
     @Transactional
     public User verifyUser(long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        if (user.isVerified()) {
+            return user;
+        }
         user.setVerified(true);
         user.setStatus(Status.VERIFIED);
         user.setVerifiedAt(new Date());
@@ -43,12 +46,17 @@ public class UserService {
     }
 
     @Transactional
-    public boolean deactivateUser(long userId) {
+    public User deactivateUser(long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
+        if(user.getStatus().equals(Status.DEACTIVATED)){
+            return user;
+        }
+
         user.setStatus(Status.DEACTIVATED);
         user.setDeactivatedAt(new Date());
         userRepository.save(user);
-        return true;
+        return user;
     }
 
     @Transactional
