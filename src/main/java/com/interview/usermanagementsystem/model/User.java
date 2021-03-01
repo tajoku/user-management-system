@@ -35,7 +35,7 @@ public class User implements Serializable {
     @Column(nullable = false)
     private String lastname;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
@@ -67,4 +67,5 @@ public class User implements Serializable {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
+
 }
