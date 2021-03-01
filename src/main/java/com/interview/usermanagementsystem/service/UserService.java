@@ -1,6 +1,8 @@
 package com.interview.usermanagementsystem.service;
 
 import com.interview.usermanagementsystem.api.CreateUserRequest;
+import com.interview.usermanagementsystem.constants.EmailMessages;
+import com.interview.usermanagementsystem.constants.EmailSubject;
 import com.interview.usermanagementsystem.enums.Status;
 import com.interview.usermanagementsystem.exception.UserAlreadyExistsException;
 import com.interview.usermanagementsystem.exception.UserNotFoundException;
@@ -10,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -21,12 +24,15 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    private final EmailService emailService;
+
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, EmailService emailService) {
         this.userRepository = userRepository;
+        this.emailService = emailService;
     }
 
-    Page<User> getExistingUsers(Pageable pageable, boolean includeDeleted) {
+    public Page<User> getExistingUsers(Pageable pageable, boolean includeDeleted) {
         if (includeDeleted) {
             return userRepository.findAll(pageable);
         }
@@ -42,6 +48,8 @@ public class UserService {
         user.setVerified(true);
         user.setStatus(Status.VERIFIED);
         user.setVerifiedAt(new Date());
+
+        sendNotification(user, EmailSubject.VERIFICATION, EmailMessages.VERIFICATION);
         return userRepository.save(user);
     }
 
@@ -49,13 +57,15 @@ public class UserService {
     public User deactivateUser(long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        if(user.getStatus().equals(Status.DEACTIVATED)){
+        if (user.getStatus().equals(Status.DEACTIVATED)) {
             return user;
         }
 
         user.setStatus(Status.DEACTIVATED);
         user.setDeactivatedAt(new Date());
         userRepository.save(user);
+
+        sendNotification(user, EmailSubject.DEACTIVATION, EmailMessages.DEACTIVATION);
         return user;
     }
 
@@ -64,7 +74,7 @@ public class UserService {
         if (userRepository.findUserByEmail(request.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException();
         }
-        return userRepository.save(User.builder()
+        User user = userRepository.save(User.builder()
                 .title(request.getTitle())
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())
@@ -74,5 +84,17 @@ public class UserService {
                 .role(request.getRole())
                 .status(Status.REGISTERED)
                 .build());
+
+        sendNotification(user, EmailSubject.REGISTRATION, EmailMessages.REGISTRATION);
+        return user;
+    }
+
+    @Async
+    public void sendNotification(User user, String subject, String message) {
+        String emailBody = String.format("Dear %s %s,", user.getFirstname(), user.getLastname()) + "\n\n";
+        emailBody += message + "\n";
+        emailService.sendText("admin@usermanagementservice.com", user.getEmail(), subject,
+                emailBody.trim());
+
     }
 }

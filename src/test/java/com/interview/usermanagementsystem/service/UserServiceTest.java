@@ -1,6 +1,7 @@
 package com.interview.usermanagementsystem.service;
 
 import com.interview.usermanagementsystem.api.CreateUserRequest;
+import com.interview.usermanagementsystem.constants.EmailSubject;
 import com.interview.usermanagementsystem.enums.Role;
 import com.interview.usermanagementsystem.enums.Status;
 import com.interview.usermanagementsystem.exception.UserAlreadyExistsException;
@@ -10,6 +11,7 @@ import com.interview.usermanagementsystem.repository.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +28,10 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -35,18 +41,22 @@ public class UserServiceTest {
     @Autowired
     UserRepository userRepository;
 
-    @Autowired
+    @Mock
+    EmailService emailService;
+
+
     UserService userService;
 
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
+        userService = new UserService(userRepository, emailService);
     }
 
     // get existing users
 
     @Test
-    public void shouldReturnPagedListOfAllUsersWhenIncludeDeletedIsTrue(){
+    public void shouldReturnPagedListOfAllUsersWhenIncludeDeletedIsTrue() {
 
         userRepository.saveAll(Arrays.asList(generateRegisteredUser(), generateDeactivatedUser(), generateVerifiedUser()));
 
@@ -56,7 +66,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void shouldReturnPagedListOfActiveUsersWhenIncludeDeletedIsFalse(){
+    public void shouldReturnPagedListOfActiveUsersWhenIncludeDeletedIsFalse() {
 
         userRepository.saveAll(Arrays.asList(generateRegisteredUser(), generateDeactivatedUser(), generateVerifiedUser()));
 
@@ -72,7 +82,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void shouldReturnEmptyPagedListWhenNoUsersExist(){
+    public void shouldReturnEmptyPagedListWhenNoUsersExist() {
         Page<User> users = userService.getExistingUsers(PageRequest.of(0, 5), true);
         assertEquals(0, users.getTotalElements());
     }
@@ -80,7 +90,7 @@ public class UserServiceTest {
     // Verify User
 
     @Test
-    public void shouldUpdateUserStatusVerifiedFlagAndVerifiedAtWhenUserExists(){
+    public void shouldUpdateUserStatusVerifiedFlagAndVerifiedAtWhenUserExists() {
         User registeredUser = userRepository.save(generateRegisteredUser());
 
         long userId = registeredUser.getId();
@@ -97,6 +107,9 @@ public class UserServiceTest {
         assertTrue(registeredUser.isVerified());
         assertEquals(Status.VERIFIED, registeredUser.getStatus());
         assertNotNull(registeredUser.getVerifiedAt());
+
+        verify(emailService, times(1)).sendText(eq("admin@usermanagementservice.com"), eq(registeredUser.getEmail()),
+                eq(EmailSubject.VERIFICATION), any(String.class));
     }
 
     @Test
@@ -123,7 +136,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void shouldThrowUserNotFoundExceptionWhenUserToVerifyDoesNotExist(){
+    public void shouldThrowUserNotFoundExceptionWhenUserToVerifyDoesNotExist() {
         assertThatThrownBy(() -> userService.verifyUser(1234L)).isInstanceOf(UserNotFoundException.class);
     }
 
@@ -131,7 +144,7 @@ public class UserServiceTest {
     // Deactivate User
 
     @Test
-    public void shouldUpdateUserStatusAndDeactivatedAtWhenUserExists(){
+    public void shouldUpdateUserStatusAndDeactivatedAtWhenUserExists() {
         User registeredUser = userRepository.save(generateRegisteredUser());
 
         long userId = registeredUser.getId();
@@ -146,6 +159,10 @@ public class UserServiceTest {
         assertNotNull(registeredUser);
         assertEquals(Status.DEACTIVATED, registeredUser.getStatus());
         assertNotNull(registeredUser.getDeactivatedAt());
+
+
+        verify(emailService, times(1)).sendText(eq("admin@usermanagementservice.com"), eq(registeredUser.getEmail()),
+                eq(EmailSubject.DEACTIVATION), any(String.class));
     }
 
     @Test
@@ -171,7 +188,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void shouldThrowUserNotFoundExceptionWhenUserToDeactivateDoesNotExist(){
+    public void shouldThrowUserNotFoundExceptionWhenUserToDeactivateDoesNotExist() {
         assertThatThrownBy(() -> userService.deactivateUser(1234L)).isInstanceOf(UserNotFoundException.class);
     }
 
@@ -179,7 +196,7 @@ public class UserServiceTest {
     // Register User
 
     @Test
-    public void shouldCreateUserWithStatusRegistered(){
+    public void shouldCreateUserWithStatusRegistered() {
 
         CreateUserRequest request = CreateUserRequest.builder()
                 .title("Mr.")
@@ -202,10 +219,14 @@ public class UserServiceTest {
         assertEquals(request.getRole(), result.getRole());
         assertEquals(Status.REGISTERED, result.getStatus());
         assertNotNull(result.getRegisteredAt());
+
+
+        verify(emailService, times(1)).sendText(eq("admin@usermanagementservice.com"), eq(result.getEmail()),
+                eq(EmailSubject.REGISTRATION), any(String.class));
     }
 
     @Test
-    public void shouldThrowUserAlreadyExistsExceptionWhenUserEmailExists(){
+    public void shouldThrowUserAlreadyExistsExceptionWhenUserEmailExists() {
         userRepository.save(generateRegisteredUser());
         CreateUserRequest request = CreateUserRequest.builder()
                 .title("Mr.")
@@ -220,7 +241,7 @@ public class UserServiceTest {
         assertThatThrownBy(() -> userService.registerUser(request)).isInstanceOf(UserAlreadyExistsException.class);
     }
 
-    private User generateRegisteredUser(){
+    private User generateRegisteredUser() {
         return User.builder()
                 .role(Role.USER)
                 .status(Status.REGISTERED)
@@ -233,7 +254,7 @@ public class UserServiceTest {
                 .build();
     }
 
-    private User generateDeactivatedUser(){
+    private User generateDeactivatedUser() {
         return User.builder()
                 .role(Role.USER)
                 .status(Status.DEACTIVATED)
@@ -247,7 +268,7 @@ public class UserServiceTest {
     }
 
 
-    private User generateVerifiedUser(){
+    private User generateVerifiedUser() {
         return User.builder()
                 .role(Role.USER)
                 .status(Status.VERIFIED)
