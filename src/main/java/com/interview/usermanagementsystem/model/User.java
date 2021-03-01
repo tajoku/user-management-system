@@ -60,9 +60,6 @@ public class User implements Serializable {
     @Column(name = "verified_at")
     private Date verifiedAt;
 
-    @Column(nullable = false)
-    private boolean active;
-
     @Temporal(TIMESTAMP)
     @Column(name = "deactivated_at")
     private Date deactivatedAt;
