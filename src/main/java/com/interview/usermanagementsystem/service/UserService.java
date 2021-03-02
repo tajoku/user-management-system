@@ -1,8 +1,8 @@
 package com.interview.usermanagementsystem.service;
 
 import com.interview.usermanagementsystem.request.CreateUserRequest;
-import com.interview.usermanagementsystem.constants.EmailMessages;
-import com.interview.usermanagementsystem.constants.EmailSubject;
+import com.interview.usermanagementsystem.constants.EmailMessageConstants;
+import com.interview.usermanagementsystem.constants.EmailSubjectConstants;
 import com.interview.usermanagementsystem.enums.Status;
 import com.interview.usermanagementsystem.exception.UserAlreadyExistsException;
 import com.interview.usermanagementsystem.exception.UserNotFoundException;
@@ -49,7 +49,7 @@ public class UserService {
         user.setStatus(Status.VERIFIED);
         user.setVerifiedAt(new Date());
 
-        sendNotification(user, EmailSubject.VERIFICATION, EmailMessages.VERIFICATION);
+        sendNotification(user, EmailSubjectConstants.VERIFICATION, EmailMessageConstants.VERIFICATION);
         return userRepository.save(user);
     }
 
@@ -65,7 +65,7 @@ public class UserService {
         user.setDeactivatedAt(new Date());
         userRepository.save(user);
 
-        sendNotification(user, EmailSubject.DEACTIVATION, EmailMessages.DEACTIVATION);
+        sendNotification(user, EmailSubjectConstants.DEACTIVATION, EmailMessageConstants.DEACTIVATION);
         return user;
     }
 
@@ -85,7 +85,7 @@ public class UserService {
                 .status(Status.REGISTERED)
                 .build());
 
-        sendNotification(user, EmailSubject.REGISTRATION, EmailMessages.REGISTRATION);
+        sendNotification(user, EmailSubjectConstants.REGISTRATION, EmailMessageConstants.REGISTRATION);
         return user;
     }
 

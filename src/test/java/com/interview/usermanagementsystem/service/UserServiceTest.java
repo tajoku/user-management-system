@@ -1,7 +1,7 @@
 package com.interview.usermanagementsystem.service;
 
 import com.interview.usermanagementsystem.request.CreateUserRequest;
-import com.interview.usermanagementsystem.constants.EmailSubject;
+import com.interview.usermanagementsystem.constants.EmailSubjectConstants;
 import com.interview.usermanagementsystem.enums.Role;
 import com.interview.usermanagementsystem.enums.Status;
 import com.interview.usermanagementsystem.exception.UserAlreadyExistsException;
@@ -38,13 +38,13 @@ import static org.mockito.Mockito.verify;
 public class UserServiceTest {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Mock
-    EmailService emailService;
+    private EmailService emailService;
 
 
-    UserService userService;
+    private UserService userService;
 
     @Before
     public void init() {
@@ -96,7 +96,7 @@ public class UserServiceTest {
         assertNotNull(registeredUser.getVerifiedAt());
 
         verify(emailService, times(1)).sendText(eq("admin@usermanagementservice.com"), eq(registeredUser.getEmail()),
-                eq(EmailSubject.VERIFICATION), any(String.class));
+                eq(EmailSubjectConstants.VERIFICATION), any(String.class));
     }
 
     @Test
@@ -148,7 +148,7 @@ public class UserServiceTest {
 
 
         verify(emailService, times(1)).sendText(eq("admin@usermanagementservice.com"), eq(registeredUser.getEmail()),
-                eq(EmailSubject.DEACTIVATION), any(String.class));
+                eq(EmailSubjectConstants.DEACTIVATION), any(String.class));
     }
 
     @Test
@@ -206,7 +206,7 @@ public class UserServiceTest {
 
 
         verify(emailService, times(1)).sendText(eq("admin@usermanagementservice.com"), eq(result.getEmail()),
-                eq(EmailSubject.REGISTRATION), any(String.class));
+                eq(EmailSubjectConstants.REGISTRATION), any(String.class));
     }
 
     @Test
