@@ -1,4 +1,4 @@
-package com.interview.usermanagementsystem.api;
+package com.interview.usermanagementsystem.request;
 
 import com.interview.usermanagementsystem.enums.Role;
 import lombok.AllArgsConstructor;

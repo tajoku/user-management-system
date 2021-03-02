@@ -1,6 +1,6 @@
 package com.interview.usermanagementsystem.service;
 
-import com.interview.usermanagementsystem.api.CreateUserRequest;
+import com.interview.usermanagementsystem.request.CreateUserRequest;
 import com.interview.usermanagementsystem.constants.EmailSubject;
 import com.interview.usermanagementsystem.enums.Role;
 import com.interview.usermanagementsystem.enums.Status;
