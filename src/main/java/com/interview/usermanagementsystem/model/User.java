@@ -1,5 +1,6 @@
 package com.interview.usermanagementsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.interview.usermanagementsystem.enums.Role;
 import com.interview.usermanagementsystem.enums.Status;
 import lombok.AllArgsConstructor;
@@ -42,11 +43,16 @@ public class User implements Serializable {
     private String mobile;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -63,9 +69,5 @@ public class User implements Serializable {
     @Temporal(TIMESTAMP)
     @Column(name = "deactivated_at")
     private Date deactivatedAt;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Status status;
 
 }

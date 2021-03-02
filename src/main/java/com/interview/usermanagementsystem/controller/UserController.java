@@ -21,7 +21,8 @@ public class UserController {
     }
 
     @GetMapping("/api/users")
-    public Page<User> getExistingUsers(@RequestParam("includeDeleted") boolean includeDeleted, Pageable pageable) {
+    public Page<User> getExistingUsers(@RequestParam(value = "includeDeleted", required = false) boolean includeDeleted,
+                                       Pageable pageable) {
         return userService.getExistingUsers(pageable, includeDeleted);
     }
 

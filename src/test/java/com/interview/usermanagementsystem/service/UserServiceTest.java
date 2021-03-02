@@ -22,7 +22,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
 
@@ -57,34 +56,22 @@ public class UserServiceTest {
 
     @Test
     public void shouldReturnPagedListOfAllUsersWhenIncludeDeletedIsTrue() {
-
-        userRepository.saveAll(Arrays.asList(generateRegisteredUser(), generateDeactivatedUser(), generateVerifiedUser()));
-
         Page<User> users = userService.getExistingUsers(PageRequest.of(0, 5), true);
 
-        assertEquals(3, users.getTotalElements());
+        assertEquals(5, users.getTotalElements());
     }
 
     @Test
     public void shouldReturnPagedListOfActiveUsersWhenIncludeDeletedIsFalse() {
-
-        userRepository.saveAll(Arrays.asList(generateRegisteredUser(), generateDeactivatedUser(), generateVerifiedUser()));
-
         Page<User> users = userService.getExistingUsers(PageRequest.of(0, 5), false);
 
-        assertEquals(2, users.getTotalElements());
+        assertEquals(3, users.getTotalElements());
 
         Optional<User> deactivatedUser = users.getContent().stream()
                 .filter(user -> user.getStatus().equals(Status.DEACTIVATED))
                 .findFirst();
 
         assertFalse(deactivatedUser.isPresent());
-    }
-
-    @Test
-    public void shouldReturnEmptyPagedListWhenNoUsersExist() {
-        Page<User> users = userService.getExistingUsers(PageRequest.of(0, 5), true);
-        assertEquals(0, users.getTotalElements());
     }
 
     // Verify User
@@ -114,7 +101,6 @@ public class UserServiceTest {
 
     @Test
     public void shouldReturnUserWhenUserIsAlreadyVerified() {
-
         Date verifiedAt = Date.from(LocalDateTime.now().minusDays(4).atZone(ZoneId.systemDefault()).toInstant());
 
         User verifiedUser = generateVerifiedUser();
@@ -167,7 +153,6 @@ public class UserServiceTest {
 
     @Test
     public void shouldReturnUserWhenUserIsAlreadyDeactivated() {
-
         Date deactivatedAt = Date.from(LocalDateTime.now().minusDays(4).atZone(ZoneId.systemDefault()).toInstant());
 
         User deactivatedUser = generateDeactivatedUser();
@@ -197,7 +182,6 @@ public class UserServiceTest {
 
     @Test
     public void shouldCreateUserWithStatusRegistered() {
-
         CreateUserRequest request = CreateUserRequest.builder()
                 .title("Mr.")
                 .firstname("test")
