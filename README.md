@@ -32,20 +32,20 @@ The service is just a simple user management REST service. It uses an in-memory 
 
 Here is what this application demonstrates: 
 
--   Creation of users through the registration endpoint
+-   Creation of users through the registration endpoint.
 -   Fetching paginated list of all active users with the option to include deactivated users as well.
 -   Generation of a verification link emailed to the users after a successful user registration.
--   Updating user profile to VERIFIED after successfully calling the verification link
--   Ability to update specific fields of the user profile.
--   Ability to deactivate user profiles.
+-   Updating user profile to VERIFIED after successfully calling the verification link.
+-   Ability to update specific fields of a user.
+-   Ability to deactivate a user.
 -   Controller Exception handling.
 -   Asynchronous email sending after creating, updating, verifying and deactivating a user. 
--   Integration tests
--   Demonstrates MockMVC test framework with associated libraries
--   All APIs are "self-documented" by Swagger2 using annotations 
--   Migration scripts to add dummy users for testing
+-   Extensive Integration tests.
+-   Demonstrates MockMVC test framework with associated libraries.
+-   All APIs are "self-documented" by Swagger2 using annotations.
+-   Migration scripts to add dummy users for testing.
 
-Here are some endpoints you can call:
+Here are the endpoints you can call:
 
 ### Register a user
 
