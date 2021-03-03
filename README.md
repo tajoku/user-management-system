@@ -7,22 +7,22 @@ This is a simple CRUD Java / Maven / Spring Boot (version 2.3.3) RESTful API app
 ## Structure 
 This application follows the MVC pattern.
 
-* Model: User 
-* Repository: UserRepository
-* Service: UserService, EmailService
-* Exceptions: UserNotFoundException, UserAlreadyExistsException
-* RestController: UserController
+  * Model: User 
+  * Repository: UserRepository
+  * Service: UserService, EmailService
+  * Exceptions: UserNotFoundException, UserAlreadyExistsException
+  * RestController: UserController
 
 ## Tools 
 
-* Java
-* Spring Boot
-* Jpa
-* H2
-* Flyway 
-* Maven
-* Lombok
-* SendGrid
+  * Java
+  * Spring Boot
+  * Jpa
+  * H2
+  * Flyway 
+  * Maven
+  * Lombok
+  * SendGrid
 
 ## About the Service
 
@@ -30,18 +30,18 @@ The service is just a simple user management REST service. It uses an in-memory 
 
 Here is what this application demonstrates: 
 
-* Creation of users through the registration endpoint
-* Fetching paginated list of all active users with the option to include deactivated users as well.
-* Generation of a verification link emailed to the users after a successful user registration.
-* Updating user profile to VERIFIED after successfully calling the verification link
-* Ability to update specific fields of the user profile.
-* Ability to deactivate user profiles.
-* Controller Exception handling.
-* Asynchronous email sending after creating, updating, verifying and deactivating a user. 
-* Integration tests
-* Demonstrates MockMVC test framework with associated libraries
-* All APIs are "self-documented" by Swagger2 using annotations 
-* Migration scripts to add dummy users for testing
+  * Creation of users through the registration endpoint
+  * Fetching paginated list of all active users with the option to include deactivated users as well.
+  * Generation of a verification link emailed to the users after a successful user registration.
+  * Updating user profile to VERIFIED after successfully calling the verification link
+  * Ability to update specific fields of the user profile.
+  * Ability to deactivate user profiles.
+  * Controller Exception handling.
+  * Asynchronous email sending after creating, updating, verifying and deactivating a user. 
+  * Integration tests
+  * Demonstrates MockMVC test framework with associated libraries
+  * All APIs are "self-documented" by Swagger2 using annotations 
+  * Migration scripts to add dummy users for testing
 
 Here are some endpoints you can call:
 
@@ -107,5 +107,5 @@ Run the server and browse to localhost:8080/swagger-ui.html
 
 ### Note
 
-* Emails are unique per user.
-* A unique UUID code is generated everytime a user is registered. This is used for building the verification link.
+  * Emails are unique per user.
+  * A unique UUID code is generated everytime a user is registered. This is used for building the verification link.
