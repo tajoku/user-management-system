@@ -327,7 +327,7 @@ public class UserServiceTest {
     }
 
     private String buildEmailBody(User user,String message) {
-        String emailBody = String.format("Dear %s %s,", user.getFirstname(), user.getLastname()) + "\n\n";
+        String emailBody = format("Dear %s %s,", user.getFirstname(), user.getLastname()) + "\n\n";
         emailBody += message;
         return emailBody;
     }
