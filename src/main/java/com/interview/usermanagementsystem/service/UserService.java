@@ -41,8 +41,8 @@ public class UserService {
         this.emailService = emailService;
     }
 
-    public Page<User> getExistingUsers(Pageable pageable, boolean includeDeleted) {
-        if (includeDeleted) {
+    public Page<User> getExistingUsers(Pageable pageable, boolean includeDeactivated) {
+        if (includeDeactivated) {
             return userRepository.findAll(pageable);
         }
         return userRepository.findAllByStatusNotOrderByRegisteredAtAsc(Status.DEACTIVATED, pageable);

@@ -65,14 +65,14 @@ public class UserServiceTest {
     // get existing users
 
     @Test
-    public void shouldReturnPagedListOfAllUsersWhenIncludeDeletedIsTrue() {
+    public void shouldReturnPagedListOfAllUsersWhenIncludeDeactivatedIsTrue() {
         Page<User> users = userService.getExistingUsers(PageRequest.of(0, 5), true);
 
         assertEquals(5, users.getTotalElements());
     }
 
     @Test
-    public void shouldReturnPagedListOfActiveUsersWhenIncludeDeletedIsFalse() {
+    public void shouldReturnPagedListOfActiveUsersWhenIncludeDeactivatedIsFalse() {
         Page<User> users = userService.getExistingUsers(PageRequest.of(0, 5), false);
 
         assertEquals(3, users.getTotalElements());

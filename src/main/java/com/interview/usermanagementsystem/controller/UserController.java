@@ -5,6 +5,8 @@ import com.interview.usermanagementsystem.request.CreateUserRequest;
 import com.interview.usermanagementsystem.model.User;
 import com.interview.usermanagementsystem.request.UpdateUserRequest;
 import com.interview.usermanagementsystem.service.UserService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,28 +33,36 @@ public class UserController {
     }
 
     @GetMapping("/api/users")
-    public ResponseEntity<ApiResponse<Page<User>>> getExistingUsers(@RequestParam(value = "includeDeleted", required = false) boolean includeDeleted,
+    @ApiOperation(value = "Gets a paginated list of all existing users.", notes = "The list is paginated. " +
+            "You can provide a page number (default 0) and a page size (default 100). You can also include deactivated users by setting includeDeactivated to true (default false).")
+    public ResponseEntity<ApiResponse<Page<User>>> getExistingUsers(@ApiParam(value = "Flag to include deactivated users to the list")
+                                                                    @RequestParam(value = "includeDeactivated", required = false) boolean includeDeactivated,
                                                                     Pageable pageable) {
-        return createSuccessResponse(userService.getExistingUsers(pageable, includeDeleted));
+        return createSuccessResponse(userService.getExistingUsers(pageable, includeDeactivated));
     }
 
     @PostMapping("/api/user")
+    @ApiOperation(value = "Registers a user.", notes = "Returns the newly registered user and sends verification link to the specified email address.")
     public ResponseEntity<ApiResponse<User>> registerUser(@RequestBody @Valid CreateUserRequest request) {
         return createSuccessResponse(userService.registerUser(request));
     }
 
     @GetMapping("/api/user/verify/{code}")
-    public ResponseEntity<ApiResponse<User>> verifyUser(@PathVariable("code") String code) {
+    @ApiOperation(value = "Verifies an existing user.", notes = "Returns verified user.")
+    public ResponseEntity<ApiResponse<User>> verifyUser(@ApiParam(value = "The generated code of the user.", required = true) @PathVariable("code") String code) {
         return createSuccessResponse(userService.verifyUser(code));
     }
 
     @PutMapping("/api/user/{id}")
-    public ResponseEntity<ApiResponse<User>> updateUser(@PathVariable("id") Long id, @RequestBody UpdateUserRequest request) {
+    @ApiOperation(value = "Updates an existing user.", notes = "You have to provide a valid user ID in the URL. Only specified fields will be updated.")
+    public ResponseEntity<ApiResponse<User>> updateUser(@ApiParam(value = "The ID of the user.", required = true) @PathVariable("id") Long id,
+                                                        @RequestBody UpdateUserRequest request) {
         return createSuccessResponse(userService.updateUser(id, request));
     }
 
     @DeleteMapping("/api/user/{id}")
-    public ResponseEntity<ApiResponse<User>> deactivateUser(@PathVariable("id") Long id) {
+    @ApiOperation(value = "Deactivates an existing user.", notes = "You have to provide a valid user ID in the URL.")
+    public ResponseEntity<ApiResponse<User>> deactivateUser(@ApiParam(value = "The ID of the user.", required = true) @PathVariable("id") Long id) {
         return createSuccessResponse(userService.deactivateUser(id));
     }
 
