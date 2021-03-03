@@ -142,7 +142,7 @@ public class UserService {
 
     @Async
     public void sendNotification(User user, String subject, String message) {
-        String emailBody = String.format("Dear %s %s,", user.getFirstname(), user.getLastname()) + "\n\n";
+        String emailBody = format("Dear %s %s,", user.getFirstname(), user.getLastname()) + "\n\n";
         emailBody += message;
         emailService.sendText("admin@usermanagementservice.com", user.getEmail(), subject,
                 emailBody.trim());

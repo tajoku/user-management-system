@@ -1,7 +1,13 @@
 package com.interview.usermanagementsystem.integrations;
 
 import com.interview.usermanagementsystem.service.EmailService;
-import com.sendgrid.*;
+import com.sendgrid.Content;
+import com.sendgrid.Email;
+import com.sendgrid.Mail;
+import com.sendgrid.Method;
+import com.sendgrid.Request;
+import com.sendgrid.Response;
+import com.sendgrid.SendGrid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
