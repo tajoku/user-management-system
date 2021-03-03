@@ -55,6 +55,9 @@ public class User implements Serializable {
     @Enumerated(STRING)
     private Status status;
 
+    @Column(nullable = false, unique = true)
+    private String code;
+
     @CreationTimestamp
     @Temporal(TIMESTAMP)
     @Column(name = "registered_at", updatable = false)
@@ -70,5 +73,4 @@ public class User implements Serializable {
     @Temporal(TIMESTAMP)
     @Column(name = "deactivated_at")
     private Date deactivatedAt;
-
 }

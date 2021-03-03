@@ -9,6 +9,7 @@ import com.interview.usermanagementsystem.exception.UserAlreadyExistsException;
 import com.interview.usermanagementsystem.exception.UserNotFoundException;
 import com.interview.usermanagementsystem.model.User;
 import com.interview.usermanagementsystem.request.CreateUserRequest;
+import com.interview.usermanagementsystem.request.UpdateUserRequest;
 import com.interview.usermanagementsystem.service.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +44,7 @@ public class UserControllerTest {
 
 
     @Test
-    public void shouldReturnNewUserWhenRegisteringUser() throws Exception {
+    public void shouldReturnNewUserWhenRegisterUserIsSuccessful() throws Exception {
         when(userService.registerUser(any(CreateUserRequest.class))).thenReturn(new User());
         MvcResult result = registerUser(CreateUserRequest.builder()
                 .title("Mr.")
@@ -78,7 +79,37 @@ public class UserControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
         String body = result.getResponse().getContentAsString();
         if (!isBlank(body)) {
-            ApiResponse<Void> response = objectMapper.readValue(body, new TypeReference<ApiResponse<Void>>() {});
+            ApiResponse<Void> response = objectMapper.readValue(body, new TypeReference<ApiResponse<Void>>() {
+            });
+            assertFalse(response.isSuccess());
+            assertNull(response.getResult());
+            assertNotNull(response.getError());
+        }
+    }
+
+
+    @Test
+    public void shouldReturnUserWhenUserUpdateIsSuccessful() throws Exception {
+        when(userService.updateUser(anyLong(), any(UpdateUserRequest.class))).thenReturn(new User());
+        MvcResult result = updateUser(10L, new UpdateUserRequest());
+        assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
+        ApiResponse<User> response = objectMapper.readValue(result.getResponse().getContentAsString(),
+                new TypeReference<ApiResponse<User>>() {
+                });
+        assertTrue(response.isSuccess());
+        assertNotNull(response.getResult());
+        assertNull(response.getError());
+    }
+
+    @Test
+    public void shouldReturnUpdateUserErrorResponseWhenEmailAlreadyExists() throws Exception {
+        when(userService.updateUser(anyLong(), any(UpdateUserRequest.class))).thenThrow(new UserAlreadyExistsException());
+        MvcResult result = updateUser(11L, new UpdateUserRequest());
+        assertEquals(HttpStatus.BAD_REQUEST.value(), result.getResponse().getStatus());
+        String body = result.getResponse().getContentAsString();
+        if (!isBlank(body)) {
+            ApiResponse<Void> response = objectMapper.readValue(body, new TypeReference<ApiResponse<Void>>() {
+            });
             assertFalse(response.isSuccess());
             assertNull(response.getResult());
             assertNotNull(response.getError());
@@ -87,8 +118,8 @@ public class UserControllerTest {
 
     @Test
     public void shouldReturnUserWhenVerifyingUser() throws Exception {
-        when(userService.verifyUser(anyLong())).thenReturn(new User());
-        MvcResult result = verifyUser(11L);
+        when(userService.verifyUser(anyString())).thenReturn(new User());
+        MvcResult result = verifyUser("test");
         assertEquals(HttpStatus.OK.value(), result.getResponse().getStatus());
         ApiResponse<User> response = objectMapper.readValue(result.getResponse().getContentAsString(),
                 new TypeReference<ApiResponse<User>>() {
@@ -100,12 +131,13 @@ public class UserControllerTest {
 
     @Test
     public void shouldReturnVerifyUserErrorResponseWhenUserIdDoesNotExist() throws Exception {
-        when(userService.verifyUser(anyLong())).thenThrow(new UserNotFoundException());
-        MvcResult result = verifyUser(10L);
+        when(userService.verifyUser(anyString())).thenThrow(new UserNotFoundException());
+        MvcResult result = verifyUser("code");
         assertEquals(HttpStatus.NOT_FOUND.value(), result.getResponse().getStatus());
         String body = result.getResponse().getContentAsString();
         if (!isBlank(body)) {
-            ApiResponse<Void> response = objectMapper.readValue(body, new TypeReference<ApiResponse<Void>>() {});
+            ApiResponse<Void> response = objectMapper.readValue(body, new TypeReference<ApiResponse<Void>>() {
+            });
             assertFalse(response.isSuccess());
             assertNull(response.getResult());
             assertNotNull(response.getError());
@@ -133,7 +165,8 @@ public class UserControllerTest {
         assertEquals(HttpStatus.NOT_FOUND.value(), result.getResponse().getStatus());
         String body = result.getResponse().getContentAsString();
         if (!isBlank(body)) {
-            ApiResponse<Void> response = objectMapper.readValue(body, new TypeReference<ApiResponse<Void>>() {});
+            ApiResponse<Void> response = objectMapper.readValue(body, new TypeReference<ApiResponse<Void>>() {
+            });
             assertFalse(response.isSuccess());
             assertNull(response.getResult());
             assertNotNull(response.getError());
@@ -147,7 +180,8 @@ public class UserControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), result.getResponse().getStatus());
         String body = result.getResponse().getContentAsString();
         if (!isBlank(body)) {
-            ApiResponse<Void> response = objectMapper.readValue(body, new TypeReference<ApiResponse<Void>>() {});
+            ApiResponse<Void> response = objectMapper.readValue(body, new TypeReference<ApiResponse<Void>>() {
+            });
             assertFalse(response.isSuccess());
             assertNull(response.getResult());
             assertNotNull(response.getError());
@@ -167,12 +201,18 @@ public class UserControllerTest {
         ).andReturn();
     }
 
-    private MvcResult verifyUser(Long id) throws Exception {
-        return mvc.perform(put("/api/user/" + id )).andReturn();
+    private MvcResult updateUser(Long id, UpdateUserRequest request) throws Exception {
+        return mvc.perform(put("/api/user/" + id)
+                .content(toJson(request))
+                .contentType(MediaType.APPLICATION_JSON)).andReturn();
+    }
+
+    private MvcResult verifyUser(String code) throws Exception {
+        return mvc.perform(get("/api/user/verify/" + code)).andReturn();
     }
 
     private MvcResult deactivateUser(Long id) throws Exception {
-        return mvc.perform(delete("/api/user/" + id )).andReturn();
+        return mvc.perform(delete("/api/user/" + id)).andReturn();
     }
 
     private String toJson(Object object) {

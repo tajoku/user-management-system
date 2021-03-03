@@ -3,6 +3,7 @@ package com.interview.usermanagementsystem.controller;
 import com.interview.usermanagementsystem.api.ApiResponse;
 import com.interview.usermanagementsystem.request.CreateUserRequest;
 import com.interview.usermanagementsystem.model.User;
+import com.interview.usermanagementsystem.request.UpdateUserRequest;
 import com.interview.usermanagementsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,9 +34,14 @@ public class UserController {
         return createSuccessResponse(userService.registerUser(request));
     }
 
+    @GetMapping("/api/user/verify/{code}")
+    public ResponseEntity<ApiResponse<User>> verifyUser(@PathVariable("code") String code) {
+        return createSuccessResponse(userService.verifyUser(code));
+    }
+
     @PutMapping("/api/user/{id}")
-    public ResponseEntity<ApiResponse<User>> verifyUser(@PathVariable("id") Long id) {
-        return createSuccessResponse(userService.verifyUser(id));
+    public ResponseEntity<ApiResponse<User>> updateUser(@PathVariable("id") Long id, @RequestBody UpdateUserRequest request) {
+        return createSuccessResponse(userService.updateUser(id, request));
     }
 
     @DeleteMapping("/api/user/{id}")

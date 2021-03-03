@@ -15,4 +15,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> findAllByStatusNotOrderByRegisteredAtAsc(Status status, Pageable pageable);
 
     Optional<User> findUserByEmail(String email);
+
+    Optional<User> findUserByCode(String code);
 }
