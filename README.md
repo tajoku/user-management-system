@@ -106,3 +106,5 @@ Go to https://usermanagement-service.herokuapp.com/swagger-ui.html
 
 -   Emails are unique per user.
 -   A unique UUID code is generated everytime a user is registered. This is used for building the verification link.
+-   To make use of sendgrid for sending of emails, run with spring.active.profiles = sendgrid.
+-   To make use of java mail sender for sending of emails, run with spring.active.profiles = default.
