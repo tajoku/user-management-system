@@ -47,6 +47,8 @@ Here is what this application demonstrates:
 
 Here are the endpoints you can call:
 
+URL: https://usermanagement-service.herokuapp.com/
+
 ### Register a user
 
     POST /api/user
@@ -98,7 +100,7 @@ GET /api/user/verify/123e4567-e89b-12d3-a456-426614174000
 
 ### To view Swagger 2 API docs
 
-Run the server and browse to localhost:8080/swagger-ui.html
+Go to https://usermanagement-service.herokuapp.com/swagger-ui.html
 
 ### Note
 
